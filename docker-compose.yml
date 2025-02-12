@@ -1,0 +1,37 @@
+services:
+  points-service:
+    build: ./points-service
+    environment:
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_DB: db
+    volumes:
+      - ./points-service:/app
+    working_dir: /app
+    ports:
+      - 8081:8080
+    depends_on:
+      - db
+
+  db:
+    image: postgis/postgis:latest
+    restart: always
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgis_data:/var/lib/postgresql/data
+
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    depends_on:
+      - db
+
+volumes:
+  postgis_data:
