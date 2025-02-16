@@ -13,6 +13,7 @@ import (
 	"github.com/giicoo/osiris/points-service/internal/server"
 	"github.com/giicoo/osiris/points-service/internal/services"
 	"github.com/giicoo/osiris/points-service/pkg/logging"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,8 +30,9 @@ func RunApp() {
 	controller := restapi.NewController(cfg, services)
 
 	r := restapi.SetupRouter(controller)
+	h := cors.Default().Handler(r.Handler())
 
-	srv := server.NewServer(cfg, r.Handler())
+	srv := server.NewServer(cfg, h)
 
 	go func() {
 
