@@ -51,6 +51,10 @@ func RunApp() {
 
 	<-stop
 
+	if err := repository.CloseConnection(); err != nil {
+		logrus.Errorf("close connection db: %s", err)
+		return
+	}
 	// ShutDown Server
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()

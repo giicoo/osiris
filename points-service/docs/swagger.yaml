@@ -1,0 +1,251 @@
+basePath: /
+definitions:
+  entity.Point:
+    properties:
+      created_at:
+        type: string
+        x-order: "5"
+      id:
+        type: integer
+        x-order: "0"
+      location:
+        type: string
+        x-order: "3"
+      radius:
+        type: integer
+        x-order: "4"
+      title:
+        type: string
+        x-order: "2"
+      updated_at:
+        type: string
+        x-order: "6"
+      user_id:
+        type: integer
+        x-order: "1"
+    type: object
+  models.CreatePoint:
+    properties:
+      location:
+        type: string
+        x-order: "2"
+      radius:
+        type: integer
+        x-order: "3"
+      title:
+        type: string
+        x-order: "1"
+      user_id:
+        type: integer
+        x-order: "0"
+    required:
+    - location
+    - radius
+    - title
+    - user_id
+    type: object
+  models.DeletePoint:
+    properties:
+      id:
+        type: integer
+        x-order: "0"
+    required:
+    - id
+    type: object
+  models.UpdateLocationPoint:
+    properties:
+      id:
+        type: integer
+        x-order: "0"
+      location:
+        type: string
+        x-order: "1"
+    required:
+    - id
+    - location
+    type: object
+  models.UpdateRadiusPoint:
+    properties:
+      id:
+        type: integer
+        x-order: "0"
+      radius:
+        type: integer
+        x-order: "1"
+    required:
+    - id
+    - radius
+    type: object
+  models.UpdateTitlePoint:
+    properties:
+      id:
+        type: integer
+        x-order: "0"
+      title:
+        type: string
+        x-order: "1"
+    required:
+    - id
+    - title
+    type: object
+host: localhost:8081
+info:
+  contact: {}
+  title: Osiris Points Service API
+  version: "1.0"
+paths:
+  /create/point:
+    post:
+      consumes:
+      - application/json
+      description: create point
+      parameters:
+      - description: Write Point
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreatePoint'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Point'
+      summary: create point
+      tags:
+      - points
+  /delete/point:
+    delete:
+      consumes:
+      - application/json
+      description: delete point
+      parameters:
+      - description: Write ID
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeletePoint'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: delete point
+      tags:
+      - points
+  /get/point/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get point by id
+      parameters:
+      - description: Point ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Point'
+      summary: get point
+      tags:
+      - points
+  /get/points/{user_id}:
+    get:
+      consumes:
+      - application/json
+      description: get points by user_id
+      parameters:
+      - description: User ID
+        in: path
+        name: user_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Point'
+            type: array
+      summary: get points
+      tags:
+      - points
+  /update/point/location:
+    put:
+      consumes:
+      - application/json
+      description: update location
+      parameters:
+      - description: Write Location like '0 30'
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateLocationPoint'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Point'
+      summary: update location
+      tags:
+      - points
+  /update/point/radius:
+    put:
+      consumes:
+      - application/json
+      description: update radius
+      parameters:
+      - description: Write Radius
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateRadiusPoint'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Point'
+      summary: update radius
+      tags:
+      - points
+  /update/point/title:
+    put:
+      consumes:
+      - application/json
+      description: update title
+      parameters:
+      - description: Write Title
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.UpdateTitlePoint'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Point'
+      summary: update title
+      tags:
+      - points
+swagger: "2.0"

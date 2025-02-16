@@ -1,6 +1,10 @@
 package restapi
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+	swaggerfiles "github.com/swaggo/files"
+	ginSwagger "github.com/swaggo/gin-swagger"
+)
 
 func SetupRouter(controller *Controller) *gin.Engine {
 	r := gin.Default()
@@ -12,5 +16,7 @@ func SetupRouter(controller *Controller) *gin.Engine {
 	r.PUT("/update/point/title", controller.UpdateTitle)
 	r.PUT("/update/point/radius", controller.UpdateRadius)
 	r.DELETE("/delete/point", controller.DeletePoint)
+
+	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerfiles.Handler))
 	return r
 }
