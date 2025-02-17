@@ -5,8 +5,7 @@
         "contact": {},
         "version": "1.0"
     },
-    "host": "localhost:8081",
-    "basePath": "/",
+    "host": "giicoo.ru",
     "paths": {
         "/create/point": {
             "post": {

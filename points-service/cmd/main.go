@@ -8,9 +8,8 @@ import (
 //	@title		Osiris Points Service API
 //	@version	1.0
 
-// @host		localhost:8081
-// @BasePath	/
+// @host		giicoo.ru
 func main() {
-	docs.SwaggerInfo.BasePath = "/"
+	docs.SwaggerInfo.BasePath = "/api/points-service"
 	app.RunApp()
 }

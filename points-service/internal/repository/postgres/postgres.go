@@ -3,6 +3,7 @@ package postgres
 import (
 	"database/sql"
 	"fmt"
+	"os"
 
 	"github.com/giicoo/osiris/points-service/internal/config"
 	"github.com/giicoo/osiris/points-service/internal/entity"
@@ -31,6 +32,13 @@ func (repo *Repo) Connection() error {
 
 	if err := repo.db.Ping(); err != nil {
 		return fmt.Errorf("ping postgres: %w", err)
+	}
+	tablesSQL, err := os.ReadFile("internal/repository/postgres/sql/create_tables.sql")
+	if err != nil {
+		return fmt.Errorf("open sql: %w", err)
+	}
+	if _, err := repo.db.Exec(string(tablesSQL)); err != nil {
+		return fmt.Errorf("create tables: %w", err)
 	}
 	return nil
 }

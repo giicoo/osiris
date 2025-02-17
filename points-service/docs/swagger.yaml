@@ -1,4 +1,3 @@
-basePath: /
 definitions:
   entity.Point:
     properties:
@@ -88,7 +87,7 @@ definitions:
     - id
     - title
     type: object
-host: localhost:8081
+host: giicoo.ru
 info:
   contact: {}
   title: Osiris Points Service API

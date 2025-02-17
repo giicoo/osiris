@@ -13,7 +13,6 @@ import (
 	"github.com/giicoo/osiris/points-service/internal/server"
 	"github.com/giicoo/osiris/points-service/internal/services"
 	"github.com/giicoo/osiris/points-service/pkg/logging"
-	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -30,9 +29,9 @@ func RunApp() {
 	controller := restapi.NewController(cfg, services)
 
 	r := restapi.SetupRouter(controller)
-	h := cors.Default().Handler(r.Handler())
+	// h := cors.Default().Handler(r.Handler())
 
-	srv := server.NewServer(cfg, h)
+	srv := server.NewServer(cfg, r.Handler())
 
 	go func() {
 
@@ -57,6 +56,7 @@ func RunApp() {
 		logrus.Errorf("close connection db: %s", err)
 		return
 	}
+	logrus.Info("DB stop")
 	// ShutDown Server
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
