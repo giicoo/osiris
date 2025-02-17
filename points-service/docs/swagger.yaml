@@ -1,3 +1,4 @@
+basePath: /api/points-service
 definitions:
   entity.Point:
     properties:

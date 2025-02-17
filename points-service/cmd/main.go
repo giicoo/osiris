@@ -9,6 +9,7 @@ import (
 //	@version	1.0
 
 // @host		giicoo.ru
+// @BasePath /api/points-service
 func main() {
 	docs.SwaggerInfo.BasePath = "/api/points-service"
 	app.RunApp()

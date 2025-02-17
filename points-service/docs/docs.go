@@ -384,7 +384,7 @@ const docTemplate = `{
 var SwaggerInfo = &swag.Spec{
 	Version:          "1.0",
 	Host:             "giicoo.ru",
-	BasePath:         "",
+	BasePath:         "/api/points-service",
 	Schemes:          []string{},
 	Title:            "Osiris Points Service API",
 	Description:      "",
