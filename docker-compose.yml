@@ -14,6 +14,7 @@ services:
       - db
       - adminer
 
+<<<<<<< HEAD
   alerts-service:
     build: ./alerts-service
     environment:
@@ -29,6 +30,8 @@ services:
       - db
       - adminer
 
+=======
+>>>>>>> points-service
   db:
     image: postgis/postgis:latest
     restart: always
