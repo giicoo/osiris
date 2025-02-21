@@ -9,10 +9,12 @@ import (
 
 	"github.com/giicoo/osiris/alerts-service/internal/config"
 	"github.com/giicoo/osiris/alerts-service/internal/delivery/restapi"
+	"github.com/giicoo/osiris/alerts-service/internal/infrastructure/rabbitmq"
 	"github.com/giicoo/osiris/alerts-service/internal/repository/postgres"
 	"github.com/giicoo/osiris/alerts-service/internal/server"
 	"github.com/giicoo/osiris/alerts-service/internal/services"
 	"github.com/giicoo/osiris/alerts-service/pkg/logging"
+	"github.com/rs/cors"
 	"github.com/sirupsen/logrus"
 )
 
@@ -20,18 +22,23 @@ func RunApp() {
 	logging.SetupLogging("points")
 	cfg := config.SetupConfig("points")
 
+	rabmq := rabbitmq.NewAlertProducing(cfg)
+	if err := rabmq.InitAlertProducing(); err != nil {
+		logrus.Fatal("init rabbitmq: ", err)
+	}
+
 	repository := postgres.NewRepo(cfg)
 	if err := repository.Connection(); err != nil {
-		logrus.Errorf("connect db: %s", err)
+		logrus.Fatal("connect db: %w", err)
 	}
 	logrus.Info("Repo connection")
-	services := services.NewServices(cfg, repository)
+	services := services.NewServices(cfg, repository, rabmq)
 	controller := restapi.NewController(cfg, services)
 
 	r := restapi.SetupRouter(controller)
-	// h := cors.Default().Handler(r.Handler())
+	h := cors.Default().Handler(r.Handler())
 
-	srv := server.NewServer(cfg, r.Handler())
+	srv := server.NewServer(cfg, h)
 
 	go func() {
 
@@ -41,7 +48,7 @@ func RunApp() {
 			case http.ErrServerClosed:
 
 			default:
-				logrus.Errorf("start server: %s", err)
+				logrus.Fatal("start server: %s", err)
 				return
 			}
 		}

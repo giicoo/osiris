@@ -17,6 +17,19 @@ type Config struct {
 		Host string `mapstructure:"host"`
 		Port string `mapstructure:"port"`
 	} `mapstructure:"server"`
+
+	Rabbitmq struct {
+		Exchange struct {
+			Name       string `mapstructure:"name"`
+			Type       string `mapstructure:"type"`
+			Durability bool   `mapstructure:"durability"`
+		} `mapstructure:"exchange"`
+
+		Queue struct {
+			Name       string `mapstructure:"name"`
+			Durability bool   `mapstructure:"durability"`
+		}
+	} `mapstructure:"rabbitmq"`
 }
 
 func SetupConfig(service string) *Config {

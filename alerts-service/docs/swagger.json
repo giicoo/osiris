@@ -1,0 +1,356 @@
+{
+    "swagger": "2.0",
+    "info": {
+        "title": "Osiris Alerts Service API",
+        "contact": {},
+        "version": "1.0"
+    },
+    "host": "localhost:8082",
+    "basePath": "/",
+    "paths": {
+        "/create/alert": {
+            "post": {
+                "description": "create alert",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "alerts"
+                ],
+                "summary": "create alert",
+                "parameters": [
+                    {
+                        "description": "Write Alert",
+                        "name": "point",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateAlert"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Alert"
+                        }
+                    }
+                }
+            }
+        },
+        "/create/type": {
+            "post": {
+                "description": "create type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "types"
+                ],
+                "summary": "create type",
+                "parameters": [
+                    {
+                        "description": "Write Type",
+                        "name": "point",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.CreateType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Type"
+                        }
+                    }
+                }
+            }
+        },
+        "/delete/type": {
+            "delete": {
+                "description": "delete type",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "types"
+                ],
+                "summary": "delete type",
+                "parameters": [
+                    {
+                        "description": "Write ID",
+                        "name": "point",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/models.DeleteType"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "/get/alert/{id}": {
+            "get": {
+                "description": "get alert by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "alerts"
+                ],
+                "summary": "get alert",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Alert ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Alert"
+                        }
+                    }
+                }
+            }
+        },
+        "/get/alerts": {
+            "get": {
+                "description": "get alerts",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "alerts"
+                ],
+                "summary": "get alerts",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Alert"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/get/type/{id}": {
+            "get": {
+                "description": "get type by id",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "types"
+                ],
+                "summary": "get type",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "Type ID",
+                        "name": "id",
+                        "in": "path",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/entity.Type"
+                        }
+                    }
+                }
+            }
+        },
+        "/get/types": {
+            "get": {
+                "description": "get types",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "types"
+                ],
+                "summary": "get types",
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/entity.Type"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "definitions": {
+        "entity.Alert": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "x-order": "0"
+                },
+                "user_id": {
+                    "type": "integer",
+                    "x-order": "1"
+                },
+                "title": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "description": {
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "type_id": {
+                    "type": "integer",
+                    "x-order": "4"
+                },
+                "location": {
+                    "type": "string",
+                    "x-order": "5"
+                },
+                "radius": {
+                    "type": "integer",
+                    "x-order": "6"
+                },
+                "status": {
+                    "type": "boolean",
+                    "x-order": "7"
+                },
+                "created_at": {
+                    "type": "string",
+                    "x-order": "8"
+                },
+                "updated_at": {
+                    "type": "string",
+                    "x-order": "9"
+                }
+            }
+        },
+        "entity.Type": {
+            "type": "object",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "x-order": "0"
+                },
+                "title": {
+                    "type": "string",
+                    "x-order": "1"
+                }
+            }
+        },
+        "models.CreateAlert": {
+            "type": "object",
+            "required": [
+                "description",
+                "location",
+                "radius",
+                "status",
+                "title",
+                "type_id",
+                "user_id"
+            ],
+            "properties": {
+                "user_id": {
+                    "type": "integer",
+                    "x-order": "1"
+                },
+                "title": {
+                    "type": "string",
+                    "x-order": "2"
+                },
+                "description": {
+                    "type": "string",
+                    "x-order": "3"
+                },
+                "type_id": {
+                    "type": "integer",
+                    "x-order": "4"
+                },
+                "location": {
+                    "type": "string",
+                    "x-order": "5"
+                },
+                "radius": {
+                    "type": "integer",
+                    "x-order": "6"
+                },
+                "status": {
+                    "type": "boolean",
+                    "x-order": "7"
+                }
+            }
+        },
+        "models.CreateType": {
+            "type": "object",
+            "required": [
+                "title"
+            ],
+            "properties": {
+                "title": {
+                    "type": "string",
+                    "x-order": "2"
+                }
+            }
+        },
+        "models.DeleteType": {
+            "type": "object",
+            "required": [
+                "id"
+            ],
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "x-order": "1"
+                }
+            }
+        }
+    }
+}

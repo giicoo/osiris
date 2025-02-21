@@ -1,0 +1,241 @@
+basePath: /
+definitions:
+  entity.Alert:
+    properties:
+      created_at:
+        type: string
+        x-order: "8"
+      description:
+        type: string
+        x-order: "3"
+      id:
+        type: integer
+        x-order: "0"
+      location:
+        type: string
+        x-order: "5"
+      radius:
+        type: integer
+        x-order: "6"
+      status:
+        type: boolean
+        x-order: "7"
+      title:
+        type: string
+        x-order: "2"
+      type_id:
+        type: integer
+        x-order: "4"
+      updated_at:
+        type: string
+        x-order: "9"
+      user_id:
+        type: integer
+        x-order: "1"
+    type: object
+  entity.Type:
+    properties:
+      id:
+        type: integer
+        x-order: "0"
+      title:
+        type: string
+        x-order: "1"
+    type: object
+  models.CreateAlert:
+    properties:
+      description:
+        type: string
+        x-order: "3"
+      location:
+        type: string
+        x-order: "5"
+      radius:
+        type: integer
+        x-order: "6"
+      status:
+        type: boolean
+        x-order: "7"
+      title:
+        type: string
+        x-order: "2"
+      type_id:
+        type: integer
+        x-order: "4"
+      user_id:
+        type: integer
+        x-order: "1"
+    required:
+    - description
+    - location
+    - radius
+    - status
+    - title
+    - type_id
+    - user_id
+    type: object
+  models.CreateType:
+    properties:
+      title:
+        type: string
+        x-order: "2"
+    required:
+    - title
+    type: object
+  models.DeleteType:
+    properties:
+      id:
+        type: integer
+        x-order: "1"
+    required:
+    - id
+    type: object
+host: localhost:8082
+info:
+  contact: {}
+  title: Osiris Alerts Service API
+  version: "1.0"
+paths:
+  /create/alert:
+    post:
+      consumes:
+      - application/json
+      description: create alert
+      parameters:
+      - description: Write Alert
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateAlert'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Alert'
+      summary: create alert
+      tags:
+      - alerts
+  /create/type:
+    post:
+      consumes:
+      - application/json
+      description: create type
+      parameters:
+      - description: Write Type
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.CreateType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Type'
+      summary: create type
+      tags:
+      - types
+  /delete/type:
+    delete:
+      consumes:
+      - application/json
+      description: delete type
+      parameters:
+      - description: Write ID
+        in: body
+        name: point
+        required: true
+        schema:
+          $ref: '#/definitions/models.DeleteType'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            type: string
+      summary: delete type
+      tags:
+      - types
+  /get/alert/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get alert by id
+      parameters:
+      - description: Alert ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Alert'
+      summary: get alert
+      tags:
+      - alerts
+  /get/alerts:
+    get:
+      consumes:
+      - application/json
+      description: get alerts
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Alert'
+            type: array
+      summary: get alerts
+      tags:
+      - alerts
+  /get/type/{id}:
+    get:
+      consumes:
+      - application/json
+      description: get type by id
+      parameters:
+      - description: Type ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/entity.Type'
+      summary: get type
+      tags:
+      - types
+  /get/types:
+    get:
+      consumes:
+      - application/json
+      description: get types
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/entity.Type'
+            type: array
+      summary: get types
+      tags:
+      - types
+swagger: "2.0"

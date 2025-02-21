@@ -1,3 +1,12 @@
 server:
   host: 0.0.0.0
   port: 8080
+
+rabbitmq:
+  exchange:
+    name: "alert_exchange"
+    type: "direct"
+    durability: true
+  queue:
+    name: "alerts"
+    durability: true
