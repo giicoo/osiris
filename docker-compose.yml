@@ -1,15 +1,4 @@
 services:
-  message-broker:
-    image: rabbitmq:3-management-alpine
-    container_name: message-broker
-    ports:
-      - 5672:5672 # for sender and consumer connections
-      - 15672:15672 # for serve RabbitMQ GUI
-    volumes:
-      - ${HOME}/dev-rabbitmq/data/:/var/lib/rabbitmq
-      - ${HOME}/dev-rabbitmq/log/:/var/log/rabbitmq
-    restart: always
-
   points-service:
     build: ./points-service
     environment:
@@ -39,7 +28,22 @@ services:
     depends_on:
       - db
       - adminer
-      - message-broker
+      - rabbitmq
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_DB: db
+    volumes:
+      - ./auth-service:/app
+    working_dir: /app
+    ports:
+      - 8083:8080
+    depends_on:
+      - db
+      - adminer
 
   db:
     image: postgis/postgis:latest
@@ -52,6 +56,17 @@ services:
       - "5433:5432"
     volumes:
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: rabbitmq
+    ports:
+      - 5672:5672 # for sender and consumer connections
+      - 15672:15672 # for serve RabbitMQ GUI
+    volumes:
+      - ${HOME}/dev-rabbitmq/data/:/var/lib/rabbitmq
+      - ${HOME}/dev-rabbitmq/log/:/var/log/rabbitmq
+    restart: always
 
   adminer:
     image: adminer
@@ -71,6 +86,7 @@ services:
     depends_on:
       - points-service
       - alerts-service
-      - message-broker
+      - auth-service
+      - rabbitmq
       - db
       - adminer
