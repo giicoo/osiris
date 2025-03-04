@@ -1,4 +1,4 @@
->.Юservices:
+services:
   points-service:
     build: ./points-service
     environment:
@@ -44,6 +44,7 @@
     depends_on:
       - db
       - adminer
+
 
   db:
     image: postgis/postgis:latest
