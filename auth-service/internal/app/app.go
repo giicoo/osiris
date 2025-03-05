@@ -9,7 +9,8 @@ import (
 
 	"github.com/giicoo/osiris/auth-service/internal/config"
 	"github.com/giicoo/osiris/auth-service/internal/delivery/restapi"
-	"github.com/giicoo/osiris/auth-service/internal/repository"
+	"github.com/giicoo/osiris/auth-service/internal/infrastructure"
+	"github.com/giicoo/osiris/auth-service/internal/repository/postgres"
 	"github.com/giicoo/osiris/auth-service/internal/server"
 	"github.com/giicoo/osiris/auth-service/internal/services"
 	"github.com/giicoo/osiris/auth-service/pkg/logging"
@@ -20,8 +21,13 @@ func RunApp() {
 	logging.SetupLogging("auth-service")
 	cfg := config.SetupConfig("auth-service")
 	logrus.Info(cfg)
-	repository := repository.NewRepoTemp(cfg)
-	services := services.NewServices(cfg, repository)
+	repository := postgres.NewRepo(cfg)
+	if err := repository.Connection(); err != nil {
+		logrus.Fatal("connect db: %w", err)
+	}
+	logrus.Info("Repo connection")
+	yandexAPI := infrastructure.NewYandexAPI(cfg)
+	services := services.NewServices(cfg, repository, yandexAPI)
 	controller := restapi.NewController(cfg, services)
 
 	r := restapi.SetupRouter(controller)
@@ -46,6 +52,12 @@ func RunApp() {
 	signal.Notify(stop, os.Interrupt)
 
 	<-stop
+	
+	if err := repository.CloseConnection(); err != nil {
+		logrus.Errorf("close connection db: %s", err)
+		return
+	}
+	logrus.Info("DB stop")
 
 	// ShutDown Server
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)

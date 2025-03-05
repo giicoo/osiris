@@ -1,11 +1,8 @@
 package restapi
 
 import (
-	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"net/http"
-	"net/url"
 
 	"github.com/giicoo/osiris/auth-service/internal/config"
 	"github.com/giicoo/osiris/auth-service/internal/services"
@@ -41,39 +38,28 @@ func (cont *Controller) Callback(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No code in request"})
 		return
 	}
-
-	// Получение access_token
-	data := url.Values{}
-	data.Set("grant_type", "authorization_code")
-	data.Set("code", code)
-	data.Set("client_id", cont.cfg.ClientID)
-	data.Set("client_secret", cont.cfg.ClientSecret)
-
-	resp, err := http.PostForm(tokenURL, data)
+	accessToken, err := cont.services.CreateUser(code)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get token"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("create user: %w", err)})
 		return
 	}
-	defer resp.Body.Close()
+	
 
-	body, _ := ioutil.ReadAll(resp.Body)
-	var tokenResp map[string]interface{}
-	json.Unmarshal(body, &tokenResp)
-	accessToken := tokenResp["access_token"].(string)
+	c.JSON(http.StatusOK, accessToken)
+}
 
-	// Получение информации о пользователе
-	req, _ := http.NewRequest("GET", userInfoURL, nil)
-	req.Header.Set("Authorization", "OAuth "+accessToken)
-	client := &http.Client{}
-	resp, err = client.Do(req)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get user info"})
+func (cont *Controller) CheckUser(c *gin.Context) {
+	accessToken := c.Query("access_token")
+	if accessToken == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No token in request"})
 		return
 	}
-	defer resp.Body.Close()
+	user, err := cont.services.GetUser(accessToken)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("get user: %w", err)})
+		return
+	}
+	
 
-	body, _ = ioutil.ReadAll(resp.Body)
-	var userInfo map[string]interface{}
-	json.Unmarshal(body, &userInfo)
-	c.JSON(http.StatusOK, userInfo)
+	c.JSON(http.StatusOK, user)
 }

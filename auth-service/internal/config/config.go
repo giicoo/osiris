@@ -19,10 +19,12 @@ type Config struct {
 		Host string `mapstructure:"host"`
 		Port string `mapstructure:"port"`
 	} `mapstructure:"server"`
+	RedirectURL  string `mapstructure:"redirect_url"`
+
+	
 
 	ClientID     string `mapstructure:"CLIENT_ID"`
 	ClientSecret string `mapstructure:"CLIENT_SECRET"`
-	RedirectURL  string `mapstructure:"redirect_url"`
 }
 func SetupConfig(service string) *Config {
 	var config Config

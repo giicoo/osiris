@@ -1,14 +1,8 @@
 package repository
 
-import "github.com/giicoo/osiris/auth-service/internal/config"
+import "github.com/giicoo/osiris/auth-service/internal/entity"
 
 type Repo interface {
-}
-
-type RepoTemp struct {
-	cfg *config.Config
-}
-
-func NewRepoTemp(cfg *config.Config) Repo {
-	return &RepoTemp{cfg: cfg}
+	CreateUser(user *entity.User) (int, error)
+	// GetUser(id int) (*entity.User, error)
 }
