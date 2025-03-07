@@ -21,7 +21,7 @@ func NewAlertProducing(cfg *config.Config) *AlertProducing {
 }
 
 func (p *AlertProducing) InitAlertProducing() error {
-	conn, err := amqp.Dial("amqp://guest:guest@message-broker:5672/")
+	conn, err := amqp.Dial("amqp://guest:guest@rabbitmq:5672/")
 	if err != nil {
 		return fmt.Errorf("connect rabbitmq: %w", err)
 	}
