@@ -2,6 +2,8 @@ package logging
 
 import (
 	"fmt"
+	"io"
+	"os"
 
 	"github.com/sirupsen/logrus"
 	"gopkg.in/natefinch/lumberjack.v2"
@@ -17,6 +19,6 @@ func SetupLogging(service string) {
 		Compress:   true,                                              // Сжатие старых логов
 	}
 
-	//logrus.SetOutput(io.MultiWriter(fileLogger, os.Stdout))
-	logrus.SetOutput(fileLogger)
+	logrus.SetOutput(io.MultiWriter(fileLogger, os.Stdout))
+	// logrus.SetOutput(fileLogger)
 }

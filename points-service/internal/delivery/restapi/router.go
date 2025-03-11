@@ -8,10 +8,10 @@ import (
 
 func SetupRouter(controller *Controller) *gin.Engine {
 	r := gin.Default()
-
+	r.Use(AuthUser())
 	r.POST("/create/point", controller.CreatePoint)
 	r.GET("/get/point/:id", controller.GetPoint)
-	r.GET("/get/points/:user_id", controller.GetPoints)
+	r.GET("/get/points", controller.GetPoints)
 	r.PUT("/update/point/location", controller.UpdateLocation)
 	r.PUT("/update/point/title", controller.UpdateTitle)
 	r.PUT("/update/point/radius", controller.UpdateRadius)

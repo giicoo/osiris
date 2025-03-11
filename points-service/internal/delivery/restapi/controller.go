@@ -8,6 +8,7 @@ import (
 	"github.com/giicoo/osiris/points-service/internal/entity"
 	"github.com/giicoo/osiris/points-service/internal/entity/models"
 	"github.com/giicoo/osiris/points-service/internal/services"
+	"github.com/giicoo/osiris/points-service/pkg/apiError"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -24,6 +25,15 @@ func NewController(cfg *config.Config, services *services.Services) *Controller 
 	}
 }
 
+func GetUser(c *gin.Context) (*entity.User, apiError.AErr) {
+	usr, _ := c.Get("user")
+	user, ok := usr.(*entity.User)
+	if !ok {
+		return nil, apiError.ErrDontHaveUser
+	}
+	return user, nil
+}
+
 // Osiris godoc
 //
 //	@Summary	create point
@@ -36,6 +46,12 @@ func NewController(cfg *config.Config, services *services.Services) *Controller 
 //	@Success		200		{object}	entity.Point
 //	@Router			/create/point [post]
 func (cont *Controller) CreatePoint(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
 	var json models.CreatePoint
 	if err := c.ShouldBindJSON(&json); err != nil {
 		logrus.Error(err)
@@ -44,15 +60,15 @@ func (cont *Controller) CreatePoint(c *gin.Context) {
 	}
 
 	point := &entity.Point{
-		UserID:   json.UserID,
+		UserID:   user.ID,
 		Title:    json.Title,
 		Location: json.Location,
 		Radius:   json.Radius,
 	}
-	pointDB, err := cont.services.CreatePoint(point)
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	pointDB, aerr := cont.services.CreatePoint(point)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, pointDB)
@@ -71,20 +87,24 @@ func (cont *Controller) CreatePoint(c *gin.Context) {
 //		@Success		200		{object}	entity.Point
 //		@Router			/get/point/{id} [get]
 func (cont *Controller) GetPoint(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
 		logrus.Error(err)
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	logrus.Warn(id)
-	response, err := cont.services.GetPoint(id)
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	response, aerr := cont.services.GetPoint(id, user.ID)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
-	logrus.Warn(response)
 	c.JSON(200, response)
 	return
 }
@@ -101,16 +121,16 @@ func (cont *Controller) GetPoint(c *gin.Context) {
 //		@Success		200		{object}	[]entity.Point
 //		@Router			/get/points/{user_id} [get]
 func (cont *Controller) GetPoints(c *gin.Context) {
-	user_id, err := strconv.Atoi(c.Param("user_id"))
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
-	response, err := cont.services.GetPoints(user_id)
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	response, aerr := cont.services.GetPoints(user.ID)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, response)
@@ -129,15 +149,22 @@ func (cont *Controller) GetPoints(c *gin.Context) {
 //	@Success		200		{object}	entity.Point
 //	@Router			/update/point/title [put]
 func (cont *Controller) UpdateTitle(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
+	//TODO: изменение точки только принадлежащему юзеру
 	var json models.UpdateTitlePoint
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	response, err := cont.services.UpdateTitle(json.ID, json.Title)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	response, aerr := cont.services.UpdateTitle(json.ID, json.Title, user.ID)
+	if aerr != nil {
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 
@@ -157,15 +184,21 @@ func (cont *Controller) UpdateTitle(c *gin.Context) {
 //	@Success		200		{object}	entity.Point
 //	@Router			/update/point/location [put]
 func (cont *Controller) UpdateLocation(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
 	var json models.UpdateLocationPoint
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	response, err := cont.services.UpdateLocation(json.ID, json.Location)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	response, aerr := cont.services.UpdateLocation(json.ID, json.Location, user.ID)
+	if aerr != nil {
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 
@@ -185,15 +218,21 @@ func (cont *Controller) UpdateLocation(c *gin.Context) {
 //	@Success		200		{object}	entity.Point
 //	@Router			/update/point/radius [put]
 func (cont *Controller) UpdateRadius(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
 	var json models.UpdateRadiusPoint
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	response, err := cont.services.UpdateRadius(json.ID, json.Radius)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	response, aerr := cont.services.UpdateRadius(json.ID, json.Radius, user.ID)
+	if aerr != nil {
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 
@@ -213,13 +252,19 @@ func (cont *Controller) UpdateRadius(c *gin.Context) {
 //	@Success		200		{object}	string
 //	@Router			/delete/point [delete]
 func (cont *Controller) DeletePoint(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(http.StatusBadRequest, gin.H{"error": aerr.Error()})
+		return
+	}
 	var json models.DeletePoint
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := cont.services.DeletePoint(json.ID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if aerr := cont.services.DeletePoint(json.ID, user.ID); aerr != nil {
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 
