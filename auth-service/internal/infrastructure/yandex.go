@@ -7,9 +7,11 @@ import (
 	"net/http"
 	"net/url"
 
-    "strconv"
+	"strconv"
+
 	"github.com/giicoo/osiris/auth-service/internal/config"
 	"github.com/giicoo/osiris/auth-service/internal/entity"
+	"github.com/sirupsen/logrus"
 )
 
 const (
@@ -44,8 +46,14 @@ func (ya *YandexAPI) GetAccessToken(code string) (string, error) {
 	body, _ := io.ReadAll(resp.Body)
 	var tokenResp map[string]interface{}
 	json.Unmarshal(body, &tokenResp)
-	accessToken := tokenResp["access_token"].(string)
-	return accessToken, nil
+	logrus.Info(tokenResp)
+	_, ok := tokenResp["access_token"]
+	if ok {
+		accessToken := tokenResp["access_token"].(string)
+		return accessToken, nil
+	}
+	erro := tokenResp["error"].(string)
+	return "", fmt.Errorf("yandex code: %s", erro)
 }
 
 func (ya *YandexAPI) GetUserInfo(accessToken string) (*entity.User, error) {
@@ -63,14 +71,14 @@ func (ya *YandexAPI) GetUserInfo(accessToken string) (*entity.User, error) {
 	var userInfo map[string]string
 	json.Unmarshal(body, &userInfo)
 	id, err := strconv.Atoi(userInfo["id"])
-    if err != nil {
-        return nil, fmt.Errorf("id to int: %w", err)
-    }
-	user := entity.User{
-		ID: id,
-		LoginYandex: userInfo["login"],
-		FirstName: userInfo["first_name"],
-		LastName: userInfo["last_name"],
+	if err != nil {
+		return nil, fmt.Errorf("id to int: %w", err)
 	}
-	return &user, nil
+	user := &entity.User{
+		ID:          id,
+		LoginYandex: userInfo["login"],
+		FirstName:   userInfo["first_name"],
+		LastName:    userInfo["last_name"],
+	}
+	return user, nil
 }

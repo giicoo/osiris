@@ -37,7 +37,7 @@ func (s *Services) CreateUser(code string) (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("create user db: %w", err)
 	}
-	
+
 	return accessToken, nil
 }
 

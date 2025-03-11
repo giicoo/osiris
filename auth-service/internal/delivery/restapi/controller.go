@@ -40,11 +40,10 @@ func (cont *Controller) Callback(c *gin.Context) {
 	}
 	accessToken, err := cont.services.CreateUser(code)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("create user: %w", err)})
+		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("create user: %w", err).Error()})
+		//TODO: returnin error
 		return
 	}
-	
-
 	c.JSON(http.StatusOK, accessToken)
 }
 
@@ -59,7 +58,6 @@ func (cont *Controller) CheckUser(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": fmt.Errorf("get user: %w", err)})
 		return
 	}
-	
 
 	c.JSON(http.StatusOK, user)
 }
