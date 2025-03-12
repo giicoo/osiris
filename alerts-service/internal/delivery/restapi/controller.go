@@ -8,6 +8,7 @@ import (
 	"github.com/giicoo/osiris/alerts-service/internal/entity"
 	"github.com/giicoo/osiris/alerts-service/internal/entity/models"
 	"github.com/giicoo/osiris/alerts-service/internal/services"
+	"github.com/giicoo/osiris/alerts-service/pkg/apiError"
 	"github.com/gin-gonic/gin"
 	"github.com/sirupsen/logrus"
 )
@@ -24,6 +25,15 @@ func NewController(cfg *config.Config, services *services.Services) *Controller 
 	}
 }
 
+func GetUser(c *gin.Context) (*entity.User, apiError.AErr) {
+	usr, _ := c.Get("user")
+	user, ok := usr.(*entity.User)
+	if !ok {
+		return nil, apiError.ErrDontHaveUser
+	}
+	return user, nil
+}
+
 // Osiris godoc
 //
 //	@Summary	create alert
@@ -36,6 +46,12 @@ func NewController(cfg *config.Config, services *services.Services) *Controller 
 //	@Success		200		{object}	entity.Alert
 //	@Router			/create/alert [post]
 func (cont *Controller) CreateAlert(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
 	var json models.CreateAlert
 	if err := c.ShouldBindJSON(&json); err != nil {
 		logrus.Error(err)
@@ -44,7 +60,7 @@ func (cont *Controller) CreateAlert(c *gin.Context) {
 	}
 
 	alert := &entity.Alert{
-		UserID:      json.UserID,
+		UserID:      user.ID,
 		Title:       json.Title,
 		Description: json.Description,
 		TypeID:      json.TypeID,
@@ -52,10 +68,10 @@ func (cont *Controller) CreateAlert(c *gin.Context) {
 		Radius:      json.Radius,
 		Status:      json.Status,
 	}
-	alertID, err := cont.services.CreateAlert(alert)
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	alertID, aerr := cont.services.CreateAlert(alert)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, alertID)
@@ -74,6 +90,12 @@ func (cont *Controller) CreateAlert(c *gin.Context) {
 //	@Success		200		{object}	entity.Type
 //	@Router			/create/type [post]
 func (cont *Controller) CreateType(c *gin.Context) {
+	// user, aerr := GetUser(c)
+	// if aerr != nil {
+	// 	logrus.Error(aerr)
+	// 	c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+	// 	return
+	// }
 	var json models.CreateType
 	if err := c.ShouldBindJSON(&json); err != nil {
 		logrus.Error(err)
@@ -84,10 +106,10 @@ func (cont *Controller) CreateType(c *gin.Context) {
 	typeModel := &entity.Type{
 		Title: json.Title,
 	}
-	typeID, err := cont.services.CreateType(typeModel)
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	typeID, aerr := cont.services.CreateType(typeModel)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, typeID)
@@ -112,10 +134,10 @@ func (cont *Controller) GetAlert(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	response, err := cont.services.GetAlert(id)
-	if err != nil {
+	response, aerr := cont.services.GetAlert(id)
+	if aerr != nil {
 		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, response)
@@ -140,10 +162,10 @@ func (cont *Controller) GetType(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	response, err := cont.services.GetType(id)
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	response, aerr := cont.services.GetType(id)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, response)
@@ -161,10 +183,10 @@ func (cont *Controller) GetType(c *gin.Context) {
 //	@Success		200		{object}	[]entity.Alert
 //	@Router			/get/alerts [get]
 func (cont *Controller) GetAlerts(c *gin.Context) {
-	response, err := cont.services.GetAlerts()
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	response, aerr := cont.services.GetAlerts()
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, response)
@@ -182,10 +204,10 @@ func (cont *Controller) GetAlerts(c *gin.Context) {
 //	@Success		200		{object}	[]entity.Type
 //	@Router			/get/types [get]
 func (cont *Controller) GetTypes(c *gin.Context) {
-	response, err := cont.services.GetTypes()
-	if err != nil {
-		logrus.Error(err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	response, aerr := cont.services.GetTypes()
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 	c.JSON(200, response)
@@ -209,8 +231,8 @@ func (cont *Controller) DeleteType(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	if err := cont.services.DeleteType(json.ID); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if aerr := cont.services.DeleteType(json.ID); aerr != nil {
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
 
