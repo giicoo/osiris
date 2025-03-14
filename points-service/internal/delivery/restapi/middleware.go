@@ -20,7 +20,7 @@ func AuthUser() gin.HandlerFunc {
 
 		if err := c.ShouldBindHeader(&h); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": fmt.Errorf("get header: %w", err),
+				"error": fmt.Errorf("get header: %w", err).Error(),
 			})
 			c.Abort()
 			return
@@ -40,7 +40,7 @@ func AuthUser() gin.HandlerFunc {
 		r, err := http.Get(url)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": fmt.Errorf("get user info: %w", err),
+				"error": fmt.Errorf("get user info: %w", err).Error(),
 			})
 			c.Abort()
 			return
@@ -50,7 +50,7 @@ func AuthUser() gin.HandlerFunc {
 		user := &entity.User{}
 		if err := json.NewDecoder(r.Body).Decode(user); err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{
-				"error": fmt.Errorf("decode user info: %w", err),
+				"error": fmt.Errorf("decode user info: %w", err).Error(),
 			})
 			c.Abort()
 			return

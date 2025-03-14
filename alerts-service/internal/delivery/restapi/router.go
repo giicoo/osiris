@@ -8,6 +8,7 @@ import (
 
 func SetupRouter(controller *Controller) *gin.Engine {
 	r := gin.Default()
+	r.Use(AuthUser())
 
 	r.POST("/create/alert", controller.CreateAlert)
 	r.POST("/create/type", controller.CreateType)

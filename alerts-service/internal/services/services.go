@@ -36,7 +36,7 @@ func (s *Services) CreateAlert(alert *entity.Alert) (*entity.Alert, apiError.AEr
 	if err != nil {
 		return nil, apiError.New(fmt.Errorf("service create get alert: %w", err), http.StatusInternalServerError)
 	}
-	body, err := json.Marshal(alert)
+	body, err := json.Marshal(alertDB)
 	if err != nil {
 		return nil, apiError.New(fmt.Errorf("failed to serialize message: %w", err), http.StatusInternalServerError)
 	}
