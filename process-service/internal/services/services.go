@@ -33,9 +33,11 @@ func (s *Services) Processing(msg []byte) error {
 	if err != nil {
 		return fmt.Errorf("get need points: %w", err)
 	}
-	body, err := json.Marshal(points)
+
+	process := entity.Process{Alert: alert, Points: points}
+	body, err := json.Marshal(process)
 	if err != nil {
-		return fmt.Errorf("marshal points: %w", err)
+		return fmt.Errorf("marshal process: %w", err)
 	}
 	s.rabbitMQ.PublicMessage(body)
 	return nil
