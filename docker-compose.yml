@@ -44,6 +44,22 @@ services:
     depends_on:
       - db
       - adminer
+  
+  process-service:
+    build: ./process-service
+    environment:
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_DB: db
+    volumes:
+      - ./process-service:/app
+    working_dir: /app
+    ports:
+      - 8084:8080
+    depends_on:
+      - db
+      - adminer
+      - rabbitmq
 
 
   db:
