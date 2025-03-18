@@ -28,9 +28,6 @@ func RunApp() {
 	services := services.NewServices(cfg, repository, rabmq)
 
 	go func() {
-		if err := rabmq.PublicMessage([]byte("hello world")); err != nil {
-			logrus.Error(err)
-		}
 		msgs, err := rabmq.ConsumeMessage()
 		if err != nil {
 			logrus.Fatal(err)

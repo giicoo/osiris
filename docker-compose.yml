@@ -60,7 +60,28 @@ services:
       - db
       - adminer
       - rabbitmq
+  
+  notification-service:
+    build: ./notification-service
+    environment:
+      DB_USER: admin
+      DB_PASSWORD: admin
+      DB_DB: db
+    volumes:
+      - ./notification-service:/app
+    working_dir: /app
+    ports:
+      - 8085:8080
+    depends_on:
+      - db
+      - adminer
+      - rabbitmq
 
+  redis:
+    image: redis
+    ports:
+      - "6379:6379"
+    
 
   db:
     image: postgis/postgis:latest

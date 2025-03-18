@@ -47,6 +47,30 @@ func (s *Services) CreateAlert(alert *entity.Alert) (*entity.Alert, apiError.AEr
 	return alertDB, nil
 }
 
+func (s *Services) StopAlert(id int, userID int) apiError.AErr {
+	alertDB, err := s.repo.GetAlert(id)
+	if err != nil {
+		return apiError.New(fmt.Errorf("service stop get alert: %w", err), http.StatusInternalServerError)
+	}
+	if alertDB.UserID != userID {
+		return apiError.New(fmt.Errorf("service stop alert is not right user"), http.StatusBadRequest)
+	}
+
+	alertDB.Status = false
+	if err := s.repo.UpdateStatusAlert(alertDB.ID, alertDB.Status); err != nil {
+		return apiError.New(fmt.Errorf("service stop alert: %w", err), http.StatusInternalServerError)
+	}
+	body, err := json.Marshal(alertDB)
+	if err != nil {
+		return apiError.New(fmt.Errorf("failed to serialize message: %w", err), http.StatusInternalServerError)
+	}
+
+	if err := s.rabbitMQ.PublicMessage(body); err != nil {
+		return apiError.New(fmt.Errorf("publish message: %w", err), http.StatusInternalServerError)
+	}
+	return nil
+}
+
 func (s *Services) CreateType(typeModel *entity.Type) (*entity.Type, apiError.AErr) {
 	id, err := s.repo.CreateType(typeModel)
 	if err != nil {

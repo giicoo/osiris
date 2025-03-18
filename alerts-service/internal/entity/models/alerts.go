@@ -20,3 +20,7 @@ type CreateType struct {
 type DeleteType struct {
 	ID int `extensions:"x-order=1" json:"id" binding:"required"`
 }
+
+type StopAlert struct {
+	ID int `extensions:"x-order=1" json:"id" binding:"required"`
+}

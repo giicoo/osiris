@@ -78,6 +78,30 @@ func (cont *Controller) CreateAlert(c *gin.Context) {
 	return
 }
 
+func (cont *Controller) StopAlert(c *gin.Context) {
+	user, aerr := GetUser(c)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
+	var json models.StopAlert
+	if err := c.ShouldBindJSON(&json); err != nil {
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	aerr = cont.services.StopAlert(json.ID, user.ID)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
+	c.JSON(200, "successeful stoped")
+	return
+}
+
 // Osiris godoc
 //
 //	@Summary	create type

@@ -6,6 +6,7 @@ type Repo interface {
 	Connection() error
 	CloseConnection() error
 	CreateAlert(alert *entity.Alert) (int, error)
+	UpdateStatusAlert(id int, status bool) error
 	CreateType(typeModel *entity.Type) (int, error)
 	GetAlert(id int) (*entity.Alert, error)
 	GetType(id int) (*entity.Type, error)

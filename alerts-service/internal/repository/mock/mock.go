@@ -171,3 +171,17 @@ func (mr *MockRepoMockRecorder) GetTypes() *gomock.Call {
         mr.mock.ctrl.T.Helper()
         return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetTypes", reflect.TypeOf((*MockRepo)(nil).GetTypes))
 }
+
+// UpdateStatusAlert mocks base method.
+func (m *MockRepo) UpdateStatusAlert(id int, status bool) error {
+        m.ctrl.T.Helper()
+        ret := m.ctrl.Call(m, "UpdateStatusAlert", id, status)
+        ret0, _ := ret[0].(error)
+        return ret0
+}
+
+// UpdateStatusAlert indicates an expected call of UpdateStatusAlert.
+func (mr *MockRepoMockRecorder) UpdateStatusAlert(id, status any) *gomock.Call {
+        mr.mock.ctrl.T.Helper()
+        return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateStatusAlert", reflect.TypeOf((*MockRepo)(nil).UpdateStatusAlert), id, status)
+}

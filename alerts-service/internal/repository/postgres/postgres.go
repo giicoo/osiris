@@ -48,6 +48,12 @@ func (repo *Repo) CreateAlert(alert *entity.Alert) (int, error) {
 	return id, nil
 }
 
+func (repo *Repo) UpdateStatusAlert(id int, status bool) error {
+	if _, err := repo.db.Query("UPDATE alerts SET status=$2, updated_at=DEFAULT WHERE id=$1", id, status); err != nil {
+		return fmt.Errorf("db update alert: %w", err)
+	}
+	return nil
+}
 func (repo *Repo) CreateType(typeModel *entity.Type) (int, error) {
 	var id int
 	rows := repo.db.QueryRow(`INSERT INTO types ("title")  VALUES ($1) RETURNING id;`, typeModel.Title)

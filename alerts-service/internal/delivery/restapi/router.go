@@ -12,6 +12,7 @@ func SetupRouter(controller *Controller) *gin.Engine {
 
 	r.POST("/create/alert", controller.CreateAlert)
 	r.POST("/create/type", controller.CreateType)
+	r.POST("/stop/alert", controller.StopAlert)
 
 	r.GET("/get/alert/:id", controller.GetAlert)
 	r.GET("/get/type/:id", controller.GetType)
