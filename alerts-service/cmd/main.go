@@ -1,16 +1,19 @@
 package main
 
 import (
-	"github.com/giicoo/osiris/alerts-service/docs"
 	"github.com/giicoo/osiris/alerts-service/internal/app"
 )
 
-//	@title		Osiris Alerts Service API
-//	@version	1.0
+// @Version 1.0.0
+// @Title Alert Serive API
+// @LicenseName MIT
+// @LicenseURL https://en.wikipedia.org/wiki/MIT_License
 
-// @host		giicoo.ru
-// @BasePath /api/alerts-service
+// @Server https://giicoo.ru/api/alerts-service PROD
+// @Server / DEV
+
+// @Security AuthorizationHeader read write
+// @SecurityScheme AuthorizationHeader http bearer Input your token
 func main() {
-	docs.SwaggerInfo.BasePath = "/api/alerts-service"
 	app.RunApp()
 }

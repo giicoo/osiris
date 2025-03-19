@@ -2,6 +2,13 @@ package entity
 
 import "time"
 
+type Error struct {
+	Error string `json:"error"`
+}
+
+type Response struct {
+	Response string `json:"message"`
+}
 type Alert struct {
 	ID          int       `extensions:"x-order=0" json:"id"`
 	UserID      int       `extensions:"x-order=1" json:"user_id"`

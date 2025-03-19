@@ -1,12 +1,12 @@
 package models
 
 type CreateAlert struct {
-	Title       string `extensions:"x-order=2" json:"title" binding:"required"`
-	Description string `extensions:"x-order=3" json:"description" binding:"required"`
-	TypeID      int    `extensions:"x-order=4" json:"type_id" binding:"required"`
-	Location    string `extensions:"x-order=5" json:"location" binding:"required"`
-	Radius      int    `extensions:"x-order=6" json:"radius" binding:"required"`
-	Status      bool   `extensions:"x-order=7" json:"status" binding:"required"`
+	Title       string `json:"title" binding:"required"  example:"Test Alert"`
+	Description string `json:"description" binding:"required" example:"About Alert"`
+	TypeID      int    `json:"type_id" binding:"required" example:"1"`
+	Location    string `json:"location" binding:"required" example:"POINT(0 0)"`
+	Radius      int    `json:"radius" binding:"required" example:"1"`
+	Status      bool   `json:"status" binding:"required" example:"true"`
 }
 
 type DeleteAlert struct {

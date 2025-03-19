@@ -34,17 +34,12 @@ func GetUser(c *gin.Context) (*entity.User, apiError.AErr) {
 	return user, nil
 }
 
-// Osiris godoc
-//
-//	@Summary	create alert
-//	@Schemes
-//	@Description	create alert
-//	@Tags			alerts
-//	@Accept			json
-//	@Produce		json
-//	@Param			point	body		models.CreateAlert	true	"Write Alert"
-//	@Success		200		{object}	entity.Alert
-//	@Router			/create/alert [post]
+// @Title Create Alert
+// @Param  alert  body  models.CreateAlert  true  "Info of a alert"
+// @Success  200  object  entity.Alert           "Alert JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource alerts
+// @Route /create/alert [post]
 func (cont *Controller) CreateAlert(c *gin.Context) {
 	user, aerr := GetUser(c)
 	if aerr != nil {
@@ -78,6 +73,12 @@ func (cont *Controller) CreateAlert(c *gin.Context) {
 	return
 }
 
+// @Title Stop Alert
+// @Param  alert  body  models.StopAlert  true  "Info of a alert"
+// @Success  200  object  entity.Response      "Success JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource alerts
+// @Route /stop/alert [post]
 func (cont *Controller) StopAlert(c *gin.Context) {
 	user, aerr := GetUser(c)
 	if aerr != nil {
@@ -98,21 +99,18 @@ func (cont *Controller) StopAlert(c *gin.Context) {
 		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
-	c.JSON(200, "successeful stoped")
+	c.JSON(200, gin.H{
+		"message": "successful stop",
+	})
 	return
 }
 
-// Osiris godoc
-//
-//	@Summary	create type
-//	@Schemes
-//	@Description	create type
-//	@Tags			types
-//	@Accept			json
-//	@Produce		json
-//	@Param			point	body		models.CreateType	true	"Write Type"
-//	@Success		200		{object}	entity.Type
-//	@Router			/create/type [post]
+// @Title Create Type
+// @Param  type  body  models.CreateType  true  "Info of a type"
+// @Success  200  object  entity.Type           "Type JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource types
+// @Route /create/type [post]
 func (cont *Controller) CreateType(c *gin.Context) {
 	// user, aerr := GetUser(c)
 	// if aerr != nil {
@@ -140,17 +138,12 @@ func (cont *Controller) CreateType(c *gin.Context) {
 	return
 }
 
-// Osiris godoc
-//
-//		@Summary	get alert
-//		@Schemes
-//		@Description	get alert by id
-//		@Tags			alerts
-//		@Accept			json
-//		@Produce		json
-//	 @Param          id   path      int  true  "Alert ID"
-//		@Success		200		{object}	entity.Alert
-//		@Router			/get/alert/{id} [get]
+// @Title Get Alert
+// @Param  alertID  path  int  true  "ID alert" "1"
+// @Success  200  object  entity.Alert           "Type JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource alerts
+// @Route /get/alert/{alertID} [get]
 func (cont *Controller) GetAlert(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -168,17 +161,12 @@ func (cont *Controller) GetAlert(c *gin.Context) {
 	return
 }
 
-// Osiris godoc
-//
-//		@Summary	get type
-//		@Schemes
-//		@Description	get type by id
-//		@Tags			types
-//		@Accept			json
-//		@Produce		json
-//	 @Param          id   path      int  true  "Type ID"
-//		@Success		200		{object}	entity.Type
-//		@Router			/get/type/{id} [get]
+// @Title Get Type
+// @Param  typeID  path  int  true  "ID type" "1"
+// @Success  200  object  entity.Type           "Type JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource types
+// @Route /get/type/{typeID} [get]
 func (cont *Controller) GetType(c *gin.Context) {
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -196,16 +184,11 @@ func (cont *Controller) GetType(c *gin.Context) {
 	return
 }
 
-// Osiris godoc
-//
-//	@Summary	get alerts
-//	@Schemes
-//	@Description	get alerts
-//	@Tags			alerts
-//	@Accept			json
-//	@Produce		json
-//	@Success		200		{object}	[]entity.Alert
-//	@Router			/get/alerts [get]
+// @Title Get Alerts
+// @Success  200  object  []entity.Alert           "Alerts JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource alerts
+// @Route /get/alerts [get]
 func (cont *Controller) GetAlerts(c *gin.Context) {
 	response, aerr := cont.services.GetAlerts()
 	if aerr != nil {
@@ -217,16 +200,11 @@ func (cont *Controller) GetAlerts(c *gin.Context) {
 	return
 }
 
-// Osiris godoc
-//
-//	@Summary	get types
-//	@Schemes
-//	@Description	get types
-//	@Tags			types
-//	@Accept			json
-//	@Produce		json
-//	@Success		200		{object}	[]entity.Type
-//	@Router			/get/types [get]
+// @Title Get Types
+// @Success  200  object  []entity.Type           "Types JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource types
+// @Route /get/types [get]
 func (cont *Controller) GetTypes(c *gin.Context) {
 	response, aerr := cont.services.GetTypes()
 	if aerr != nil {
@@ -238,17 +216,12 @@ func (cont *Controller) GetTypes(c *gin.Context) {
 	return
 }
 
-// Osiris godoc
-//
-//	@Summary	delete type
-//	@Schemes
-//	@Description	delete type
-//	@Tags			types
-//	@Accept			json
-//	@Produce		json
-//	@Param			point	body		models.DeleteType	true	"Write ID"
-//	@Success		200		{object}	string
-//	@Router			/delete/type [delete]
+// @Title Delete Type
+// @Param  type  body  models.DeleteType  true  "Info of a type"
+// @Success  200  object  entity.Response           "]JSON"
+// @Failure  400  object  entity.Error  "ErrorResponse JSON"
+// @Resource types
+// @Route /delete/type [delete]
 func (cont *Controller) DeleteType(c *gin.Context) {
 	var json models.DeleteType
 	if err := c.ShouldBindJSON(&json); err != nil {

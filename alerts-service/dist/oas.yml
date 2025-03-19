@@ -1,0 +1,336 @@
+components:
+  schemas:
+    Alert:
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        description:
+          type: string
+        id:
+          type: integer
+        location:
+          type: string
+        radius:
+          type: integer
+        status:
+          type: boolean
+        title:
+          type: string
+        type_id:
+          type: integer
+        updated_at:
+          format: date-time
+          type: string
+        user_id:
+          type: integer
+      type: object
+    CreateAlert:
+      properties:
+        description:
+          example: About Alert
+          type: string
+        location:
+          example: POINT(0 0)
+          type: string
+        radius:
+          example: 1
+          type: integer
+        status:
+          example: true
+          type: boolean
+        title:
+          example: Test Alert
+          type: string
+        type_id:
+          example: 1
+          type: integer
+      type: object
+    CreateType:
+      properties:
+        title:
+          type: string
+      type: object
+    DeleteType:
+      properties:
+        id:
+          type: integer
+      type: object
+    Error:
+      properties:
+        error:
+          type: string
+      type: object
+    Response:
+      properties:
+        message:
+          type: string
+      type: object
+    StopAlert:
+      properties:
+        id:
+          type: integer
+      type: object
+    Type:
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+      type: object
+    entity.Alert:
+      properties:
+        created_at:
+          format: date-time
+          type: string
+        description:
+          type: string
+        id:
+          type: integer
+        location:
+          type: string
+        radius:
+          type: integer
+        status:
+          type: boolean
+        title:
+          type: string
+        type_id:
+          type: integer
+        updated_at:
+          format: date-time
+          type: string
+        user_id:
+          type: integer
+      type: object
+    entity.Error:
+      properties:
+        error:
+          type: string
+      type: object
+    entity.Response:
+      properties:
+        message:
+          type: string
+      type: object
+    entity.Type:
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+      type: object
+  securitySchemes:
+    AuthorizationHeader:
+      description: Input your token
+      scheme: bearer
+      type: http
+info:
+  license:
+    name: MIT
+    url: https://en.wikipedia.org/wiki/MIT_License
+  title: Alert Serive API
+  version: 1.0.0
+openapi: 3.0.0
+paths:
+  /create/alert:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateAlert'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+          description: Alert JSON
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Create Alert
+      tags:
+      - alerts
+  /create/type:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateType'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Type'
+          description: Type JSON
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Create Type
+      tags:
+      - types
+  /delete/type:
+    delete:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeleteType'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+          description: ']JSON'
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Delete Type
+      tags:
+      - types
+  /get/alert/{alertID}:
+    get:
+      parameters:
+      - description: ID alert
+        example: "1"
+        in: path
+        name: alertID
+        required: true
+        schema:
+          description: ID alert
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Alert'
+          description: Type JSON
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Get Alert
+      tags:
+      - alerts
+  /get/alerts:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Alert'
+                type: array
+          description: Alerts JSON
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Get Alerts
+      tags:
+      - alerts
+  /get/type/{typeID}:
+    get:
+      parameters:
+      - description: ID type
+        example: "1"
+        in: path
+        name: typeID
+        required: true
+        schema:
+          description: ID type
+          format: int64
+          type: integer
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Type'
+          description: Type JSON
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Get Type
+      tags:
+      - types
+  /get/types:
+    get:
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                items:
+                  $ref: '#/components/schemas/Type'
+                type: array
+          description: Types JSON
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Get Types
+      tags:
+      - types
+  /stop/alert:
+    post:
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StopAlert'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response'
+          description: Success JSON
+        "400":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: ErrorResponse JSON
+      summary: Stop Alert
+      tags:
+      - alerts
+security:
+- AuthorizationHeader:
+  - read
+  - write
+servers:
+- description: ' PROD'
+  url: https://giicoo.ru/api/alerts-service
+- description: ' DEV'
+  url: /
