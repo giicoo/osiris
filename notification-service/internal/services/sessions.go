@@ -5,7 +5,6 @@ import (
 	"sync"
 
 	"github.com/gorilla/websocket"
-	"github.com/sirupsen/logrus"
 )
 
 type ManagerSession struct {
@@ -22,7 +21,6 @@ func NewManagerSession() *ManagerSession {
 func (m *ManagerSession) CreateSession(userID int, conn *websocket.Conn) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
-	logrus.Info(m.sessions)
 	m.sessions[userID] = conn
 }
 

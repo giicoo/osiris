@@ -6,7 +6,6 @@ import (
 
 	"github.com/giicoo/osiris/auth-service/internal/config"
 	"github.com/giicoo/osiris/auth-service/internal/entity"
-
 	_ "github.com/lib/pq"
 )
 
@@ -32,6 +31,7 @@ func (repo *Repo) Connection() error {
 	if err := repo.db.Ping(); err != nil {
 		return fmt.Errorf("ping postgres: %w", err)
 	}
+
 	return nil
 }
 
@@ -40,19 +40,26 @@ func (repo *Repo) CloseConnection() error {
 }
 
 func (repo *Repo) CreateUser(user *entity.User) (int, error) {
-	
 	var id int
-	rows := repo.db.QueryRow(`INSERT INTO users (id, login_yandex, first_name, last_name) VALUES ($1, $2, $3,$4) ON CONFLICT (id) DO UPDATE SET id = EXCLUDED.id, first_name = EXCLUDED.first_name, last_name = EXCLUDED.last_name RETURNING id;`, user.ID, user.LoginYandex, user.FirstName, user.LastName)
+	rows := repo.db.QueryRow(`INSERT INTO users (email, password)  VALUES ($1, $2) RETURNING id;`, user.Email, user.Password)
 	if err := rows.Scan(&id); err != nil {
 		return 0, fmt.Errorf("db create scan user: %w", err)
 	}
-
 	return id, nil
 }
 
-func (repo *Repo) GetUser(id int) (*entity.User, error) {
+func (repo *Repo) GetUserById(id int) (*entity.User, error) {
 	var user entity.User
-	if err := repo.db.QueryRow("SELECT * FROM users WHERE id=$1", id).Scan(&user.ID, &user.LoginYandex, &user.FirstName, &user.LastName); err != nil {
+	if err := repo.db.QueryRow("SELECT id, email, password FROM users WHERE id=$1", id).Scan(&user.ID, &user.Email, &user.Password); err != nil {
+		return nil, fmt.Errorf("db get user: %w", err)
+	}
+
+	return &user, nil
+}
+
+func (repo *Repo) GetUserByEmail(email string) (*entity.User, error) {
+	var user entity.User
+	if err := repo.db.QueryRow("SELECT id, email, password FROM users WHERE email=$1", email).Scan(&user.ID, &user.Email, &user.Password); err != nil {
 		return nil, fmt.Errorf("db get user: %w", err)
 	}
 

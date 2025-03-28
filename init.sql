@@ -1,8 +1,7 @@
 CREATE TABLE IF NOT EXISTS users (
     id SERIAL PRIMARY KEY,
-    vk_id INTEGER,
-    first_name varchar(255),
-    last_name varchar(255)
+    email varchar(255),
+    password varchar(255)
 );
 CREATE TABLE IF NOT EXISTS types (
     id SERIAL PRIMARY KEY,

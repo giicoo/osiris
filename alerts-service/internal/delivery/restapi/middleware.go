@@ -36,7 +36,8 @@ func AuthUser() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
-		url := fmt.Sprintf("http://auth-service:8080/check-user?access_token=%s", idTokenHeader[1])
+		url := fmt.Sprintf("http://auth-service:8080/auth/%s", idTokenHeader[1])
+
 		r, err := http.Get(url)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{

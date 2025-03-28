@@ -4,7 +4,6 @@ import "github.com/gin-gonic/gin"
 
 func SetupRouter(controller *Controller) *gin.Engine {
 	r := gin.Default()
-	// TODO: auth with websocket
-	r.GET("/ws", controller.WsConnect)
+	r.GET("/ws/:id", controller.WsConnect)
 	return r
 }

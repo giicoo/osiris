@@ -1,18 +1,16 @@
 package restapi
 
 import (
-	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/giicoo/osiris/auth-service/internal/config"
+	"github.com/giicoo/osiris/auth-service/internal/entity"
+	"github.com/giicoo/osiris/auth-service/internal/entity/models"
 	"github.com/giicoo/osiris/auth-service/internal/services"
+	"github.com/giicoo/osiris/auth-service/pkg/apiError"
 	"github.com/gin-gonic/gin"
-)
-
-const (
-	oauthURL    = "https://oauth.yandex.ru/authorize"
-	tokenURL    = "https://oauth.yandex.ru/token"
-	userInfoURL = "https://login.yandex.ru/info"
+	"github.com/sirupsen/logrus"
 )
 
 type Controller struct {
@@ -27,36 +25,88 @@ func NewController(cfg *config.Config, services *services.Services) *Controller 
 	}
 }
 
+func GetUser(c *gin.Context) (*entity.User, apiError.AErr) {
+	usr, _ := c.Get("user")
+	user, ok := usr.(*entity.User)
+	if !ok {
+		return nil, apiError.ErrDontHaveUser
+	}
+	return user, nil
+}
+
+func (cont *Controller) CreateUser(c *gin.Context) {
+	var json models.UserCreateRequest
+	if err := c.ShouldBindJSON(&json); err != nil {
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	user := &entity.User{
+		Email:    json.Email,
+		Password: json.Password,
+	}
+	userDB, aerr := cont.services.CreateUser(user)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
+
+	response := models.UserIdRequest{UserID: userDB.ID}
+	c.JSON(200, response)
+	return
+}
+
+func (cont *Controller) GetUser(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	response, aerr := cont.services.GetUserByID(id)
+	if aerr != nil {
+		logrus.Error(err)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
+	c.JSON(200, response)
+	return
+}
+
+func (cont *Controller) Login(c *gin.Context) {
+	var json models.UserCheckRequest
+	if err := c.ShouldBindJSON(&json); err != nil {
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user := &entity.User{
+		Email:    json.Email,
+		Password: json.Password,
+	}
+	sessionID, aerr := cont.services.CheckUser(user)
+	if aerr != nil {
+		logrus.Error(aerr)
+		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
+		return
+	}
+
+	response := models.SessionResponse{ID: sessionID}
+	c.JSON(200, response)
+	return
+}
+
 func (cont *Controller) Auth(c *gin.Context) {
-	authURL := fmt.Sprintf("%s?response_type=code&client_id=%s&redirect_uri=%s", oauthURL, cont.cfg.ClientID, cont.cfg.RedirectURL)
-	c.Redirect(http.StatusFound, authURL)
-}
+	sessionID := c.Param("session_id")
 
-func (cont *Controller) Callback(c *gin.Context) {
-	code := c.Query("code")
-	if code == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No code in request"})
-		return
-	}
-	accessToken, err := cont.services.CreateUser(code)
+	user, err := cont.services.GetUserFromSession(sessionID)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	c.JSON(http.StatusOK, accessToken)
-}
-
-func (cont *Controller) CheckUser(c *gin.Context) {
-	accessToken := c.Query("access_token")
-	if accessToken == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No token in request"})
-		return
-	}
-	user, err := cont.services.GetUser(accessToken)
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err})
-		return
-	}
-
-	c.JSON(http.StatusOK, user)
+	response := models.UserResponse{UserID: user.ID, Email: user.Email}
+	c.JSON(200, response)
 }

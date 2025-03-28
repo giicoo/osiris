@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"github.com/giicoo/osiris/auth-service/internal/config"
 
+	"github.com/giicoo/osiris/auth-service/internal/config"
 )
 
 type Server struct {

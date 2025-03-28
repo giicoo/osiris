@@ -44,6 +44,7 @@ services:
     depends_on:
       - db
       - adminer
+      - redis
   
   process-service:
     build: ./process-service

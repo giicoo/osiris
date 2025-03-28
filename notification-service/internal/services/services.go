@@ -34,7 +34,7 @@ func (s *Services) Processing(msg []byte) error {
 		return fmt.Errorf("unmarshal alert request: %w", err)
 	}
 	logrus.Info(process)
-
+	// TODO: получить юзер из процесса
 	session, err := s.sessionManager.GetSessionConn(2136636238)
 	if err != nil {
 		return fmt.Errorf("get session conn: %w", err)
