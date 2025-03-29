@@ -127,6 +127,7 @@ func (cont *Controller) GetPoints(c *gin.Context) {
 		c.JSON(aerr.Code(), gin.H{"error": aerr.Error()})
 		return
 	}
+	logrus.Info(user)
 	response, aerr := cont.services.GetPoints(user.ID)
 	if aerr != nil {
 		logrus.Error(aerr)
@@ -258,6 +259,7 @@ func (cont *Controller) DeletePoint(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": aerr.Error()})
 		return
 	}
+	logrus.Info(c.Request.Body)
 	var json models.DeletePoint
 	if err := c.ShouldBindJSON(&json); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})

@@ -6,6 +6,7 @@ import (
 
 func SetupRouter(controller *Controller) *gin.Engine {
 	r := gin.Default()
+
 	{
 		gr := r.Group("/")
 		gr.Use(AuthUser())

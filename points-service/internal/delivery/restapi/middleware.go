@@ -27,7 +27,6 @@ func AuthUser() gin.HandlerFunc {
 		}
 
 		idTokenHeader := strings.Split(h.IDToken, " ")
-
 		if len(idTokenHeader) < 2 {
 
 			c.JSON(http.StatusBadRequest, gin.H{

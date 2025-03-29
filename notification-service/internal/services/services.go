@@ -35,13 +35,17 @@ func (s *Services) Processing(msg []byte) error {
 	}
 	logrus.Info(process)
 	// TODO: получить юзер из процесса
-	session, err := s.sessionManager.GetSessionConn(2136636238)
-	if err != nil {
-		return fmt.Errorf("get session conn: %w", err)
+	for _, point := range process.Points {
+		session, err := s.sessionManager.GetSessionConn(point.UserID)
+		if err != nil {
+			return fmt.Errorf("get session conn: %w", err)
+		}
+		processUnic := entity.ProcessUnic{Alert: process.Alert, Point: point}
+		if err := session.WriteJSON(processUnic); err != nil {
+			return fmt.Errorf("send json ws: %w", err)
+		}
 	}
-	if err := session.WriteJSON(process); err != nil {
-		return fmt.Errorf("send json ws: %w", err)
-	}
+
 	return nil
 }
 
