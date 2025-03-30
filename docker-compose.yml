@@ -31,13 +31,13 @@ services:
       - rabbitmq
 
   auth-service:
-    build: ./auth-service
+    build: ./auth-service_new
     environment:
       DB_USER: admin
       DB_PASSWORD: admin
       DB_DB: db
     volumes:
-      - ./auth-service:/app
+      - ./auth-service_new:/app
     working_dir: /app
     ports:
       - 8083:8080
