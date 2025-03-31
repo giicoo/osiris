@@ -4,93 +4,40 @@
 [![forthebadge](http://forthebadge.com/images/badges/built-with-love.svg)](http://forthebadge.com)
 
 
-# БД POSTGRES(POSTGIS)
-![diagram](assets/image-1.png)
+Серверная часть приложения Osiris. 
+## Стэк:
+1. Go(gin)
+2. PostgeSQL (PostGis)
+3. Redis
+4. RabbitMQ
+5. NGINX
 
-# Микросервисы
-## Auth Service 
-+ OAuth2
-+ Генерирует токен для доступа к микросервисам
+## Схема
+![схема](assets/osiris.png)
 
+## Запуск
 
-## Alert Service 
-+ создает тревоги 
-+ получает тревоги
-+ удаляет тревоги
-Записывает в БД и передает по брокеру сообщений(alerts) следующему сервису
-
-
-## Points Service 
-+ CRUD точек
-+ Location SRID 4326
-
-### */create/point POST* 
-Создание точки. 
-- user_id из users.
-- title строка
-- location используется SRID 4326 
-- radius число
-```json
-{
-	"user_id":1,
-	"title":"test",
-	"location":"POINT(0 33)",
-	"radius":100
-}
+1. Скачать репозиторий
+```
+git clone https://github.com/giicoo/osiris
+```
+2. Запустить сервисы необходимые
+```
+docker-compose up db adminer redis rabbitmq
 ```
 
-
-### */get/point/{id} GET*
-Получение точки.
-
-
-### */get/points/{user_id} GET*
-Получение всех точек определенного юзера.
-
-
-### */update/point/title PUT*
-Обновление названия точки.
-```json
-{
-	"id":1,
-	"title":"test"
-}
+3. Запустить основные микросервисы
+```
+docker-compose up points-service alerts-service auth-service process-service notification-service
 ```
 
-
-### */update/point/location PUT*
-Обновление локации точки.
-```json
-{
-	"id":1,
-	"location":"POINT(0 30)"
-}
+4. Если нужно не локально, а на сервере, можно запутить nginx, но настроить домен в `./nginx/nginx.conf`
+```
+docker-compose up nginx
 ```
 
-
-### */update/point/radius PUT*
-Обновление радиуса точки.
-```json
-{
-	"id":1,
-	"radius":1000
-}
+5. Также нужно обновить сертификаты
+```
+docker-compose up certbot
 ```
 
-### */delete/point*
-Удаление точки.
-```json
-{
-	"id":1
-}
-```
-
-## Processing Service 
-+ Обработка запросов
-Получается нужные точки и тревогу из (alerts) 
-Генерирует запросы и отсылает в брокер сообщений(notification) 
-
-
-## Notification Service 
-+ Отправка уведомлений
-Получает запросы из брокера(notification) и отправляет сообщения
