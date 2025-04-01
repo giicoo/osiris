@@ -8,6 +8,7 @@ import (
 
 	"github.com/giicoo/osiris/notification-service/internal/entity"
 	"github.com/gin-gonic/gin"
+	"github.com/sirupsen/logrus"
 )
 
 type authHeader struct {
@@ -35,6 +36,7 @@ func AuthUser() gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+		logrus.Info(idTokenHeader[1])
 		url := fmt.Sprintf("http://auth-service:8080/auth/%s", idTokenHeader[1])
 
 		r, err := http.Get(url)

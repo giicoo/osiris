@@ -110,3 +110,18 @@ func (cont *Controller) Auth(c *gin.Context) {
 	response := models.UserResponse{UserID: user.ID, Email: user.Email}
 	c.JSON(200, response)
 }
+
+func (cont *Controller) Logout(c *gin.Context) {
+	var json models.SessionRequest
+	if err := c.ShouldBindJSON(&json); err != nil {
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	if err := cont.services.DeleteSession(json.ID); err != nil {
+		logrus.Error(err)
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	c.Status(200)
+}

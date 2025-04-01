@@ -6,11 +6,11 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"time"
 
 	"github.com/giicoo/go-auth-service/pkg/apiError"
 	"github.com/giicoo/osiris/auth-service/internal/entity"
 	"github.com/redis/go-redis/v9"
+	"github.com/sirupsen/logrus"
 )
 
 var (
@@ -55,10 +55,10 @@ func (r *SessionRepo) CreateSession(ctx context.Context, s *entity.Session) (*en
 	}
 
 	// Установка времени жизни для сессии
-	err = r.rdb.Expire(ctx, key_session, 2*time.Hour).Err()
-	if err != nil {
-		return nil, fmt.Errorf("redis set session TTL: %w", err)
-	}
+	// err = r.rdb.Expire(ctx, key_session, 2*time.Hour).Err()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("redis set session TTL: %w", err)
+	// }
 
 	// create "user_sessions <user_id>["session_id",...]""
 	key_user := fmt.Sprintf("%s:%d", UserSessionsPrefix, s.UserID)
@@ -73,15 +73,15 @@ func (r *SessionRepo) GetSession(ctx context.Context, id string) (*entity.Sessio
 	res := new(entity.Session)
 	key := fmt.Sprintf("%s:%s", SessionPrefix, id)
 
-	ttl, err := r.rdb.TTL(ctx, key).Result()
-	if err != nil {
-		return nil, fmt.Errorf("redis get session TTL: %w", err)
-	}
+	// ttl, err := r.rdb.TTL(ctx, key).Result()
+	// if err != nil {
+	// 	return nil, fmt.Errorf("redis get session TTL: %w", err)
+	// }
 
-	if ttl <= 0 {
-		return nil, fmt.Errorf("redis get session: %w", apiError.ErrSessionExpired)
+	// if ttl <= 0 {
+	// 	return nil, fmt.Errorf("redis get session: %w", apiError.ErrSessionExpired)
 
-	}
+	// }
 
 	if err := r.rdb.HGetAll(ctx, key).Scan(res); err != nil {
 		return nil, fmt.Errorf("redis get session: %w", err)
@@ -93,6 +93,7 @@ func (r *SessionRepo) GetSession(ctx context.Context, id string) (*entity.Sessio
 // delete "session <session_id>{"user_id": int, "user_ip": "string", "user_agent": "string"}""
 func (r *SessionRepo) DeleteSession(ctx context.Context, id string) error {
 	key := fmt.Sprintf("%s:%s", SessionPrefix, id)
+	logrus.Info(key)
 	if err := r.rdb.Del(ctx, key).Err(); err != nil {
 		return fmt.Errorf("redis delete session: %w", err)
 	}

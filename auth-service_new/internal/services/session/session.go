@@ -7,6 +7,7 @@ import (
 	"github.com/giicoo/osiris/auth-service/internal/entity"
 	"github.com/giicoo/osiris/auth-service/internal/repository"
 	"github.com/giicoo/osiris/auth-service/internal/repository/redisRepo"
+	"github.com/sirupsen/logrus"
 )
 
 type SessionManager struct {
@@ -41,6 +42,7 @@ func (sm *SessionManager) GetSession(id string) (*entity.Session, error) {
 
 func (sm *SessionManager) DeleteSession(id string) error {
 	session, err := sm.GetSession(id)
+	logrus.Info(session)
 	if err != nil {
 		return fmt.Errorf("session manager delete '%s': %w", id, err)
 	}

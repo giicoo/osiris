@@ -21,6 +21,8 @@ func SetupRouter(controller *Controller) *gin.Engine {
 	r.GET("/get/user/:id", controller.GetUser)
 
 	r.POST("/login", controller.Login)
+	r.POST("/logout", controller.Logout)
+
 	r.GET("/auth/:session_id", controller.Auth)
 
 	return r

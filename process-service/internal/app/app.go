@@ -3,6 +3,7 @@ package app
 import (
 	"os"
 	"os/signal"
+	"time"
 
 	"github.com/giicoo/osiris/process-service/internal/config"
 	"github.com/giicoo/osiris/process-service/internal/infrastructure/rabbitmq"
@@ -33,6 +34,10 @@ func RunApp() {
 			logrus.Fatal(err)
 		}
 		for msg := range msgs {
+			if err := services.Processing(msg.Body); err != nil {
+				logrus.Error(err)
+			}
+			time.Sleep(1 * time.Second)
 			if err := services.Processing(msg.Body); err != nil {
 				logrus.Error(err)
 			}

@@ -98,3 +98,7 @@ func (s *Services) GetUserFromSession(sessionID string) (*entity.User, apiError.
 	}
 	return user, nil
 }
+
+func (s *Services) DeleteSession(sessionID string) error {
+	return s.sessionManager.DeleteSession(sessionID)
+}
