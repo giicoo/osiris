@@ -33,7 +33,6 @@ func (s *Services) Processing(msg []byte) error {
 	if err := json.Unmarshal(msg, &process); err != nil {
 		return fmt.Errorf("unmarshal alert request: %w", err)
 	}
-	logrus.Info(process)
 	// TODO: получить юзер из процесса
 	for _, point := range process.Points {
 		logrus.Info((point.UserID))
